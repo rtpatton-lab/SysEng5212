@@ -1,0 +1,65 @@
+
+DocViewer
+Page
+of 2
+Zoom
+Pages
+% Exam Problem 8b
+% Backprop with custom activation
+clc;
+clear all;
+close all;
+% Data
+input = [1 1];
+output = 0.;
+% Weights
+w1 = [0.4 -0.3; 0.2 0.3];
+w2 = [-0.1 -0.1];
+b1 = [0.2 -0.3];
+b2 = 0.1;
+mu = 0.2;
+E=[];
+MSE = Inf;
+errorGoal = 0.01;
+while MSE>errorGoal
+    % Forward Pass
+    %---------------------------------------
+    % Neuron 1
+    node1Input = w1(1,:)*input'+b1(1,1);
+    node1Output = cos(node1Input);
+    % Neuron 2
+    node2Input = w1(2,:)*input'+b1(1,2);
+    expo2 = exp(-2*node2Input);
+    node2Output = 1.0/(1-expo2);
+    % Calculate output of network: Neuron 3
+    node3Input = w2(1,1)*node1Output + w2(1,2)*node2Output + b2;
+    expo3 = exp(-3*node3Input);
+    node3Output = 1.0/(1.0+expo3);
+    % Calculate error
+    error = output-node3Output;
+    E = norm(error)^2;
+    MSE = [MSE E];
+    % Backward Pass
+    %-------------------------------------------------------
+    % Neuron 3
+    deriv3 = 3*node3Output*[1-node3Output]; % Activation function derivative
+    delta = error*deriv3; 
+    % Neuron 2
+    deriv2 = -2*node2Output*[1-node2Output]; % Activation function derivative
+    delta2 = w2(1,2)*delta;
+    % Neuron 1
+    deriv1 = -sin(node1Input); % Activation function derivative
+    delta1 = w2(1,1)*delta;
+    % Update weights and biases
+    w1(1,1) = w1(1,1) + mu*delta1*deriv1*input(1,1);
+    w1(1,2) = w1(1,2) + mu*delta2*deriv2*input(1,2);
+    w1(2,1) = w1(2,1) + mu*delta1*deriv1*input(1,1);
+    w1(2,2) = w1(2,2) + mu*delta2*deriv2*input(1,2);
+    w2(1,1) = w2(1,1) + mu*delta*node1Output;
+    w2(1,2) = w2(1,2) + mu*delta*node2Output;
+    b1(1,1) = b1(1,1) + mu*delta1*deriv1;
+    b1(1,2) = b1(1,2) + mu*delta2*deriv1;
+    b2 = b2 + mu*error*deriv3;
+end
+plot(MSE)
+title('ExamProb2b: Training error')

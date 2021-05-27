@@ -1,0 +1,27 @@
+% Exam Problem 7
+% linear neuron
+clc;
+clear all;
+close all;
+X = [1; 0.65; 0.85];
+d = 0.5;
+% Network Parameters
+w =[0.3; 1.3; -0.3];
+b=-0.75;
+max_epoch = 40;
+lr = 0.1;
+% Train
+for i=1:max_epoch,
+    v = w'*X+b;
+    y = purelin(v);
+    e = (d-y);
+    w1=w+lr*e*X;
+    b1 = b+lr*e*1 ;
+    w=w1;
+    b = b1;
+end
+fprintf(' Number of training iterations: %f\n', i);
+fprintf(' Final weights: [%f %f %f] \n', w1);
+fprintf(' Final bias: %f\n', b1);
+% Check output
+y = purelin(w'*X+b)
